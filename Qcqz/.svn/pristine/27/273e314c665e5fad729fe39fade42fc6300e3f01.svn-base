@@ -1,0 +1,105 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<jsp:include page="../inc.jsp"></jsp:include>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+<html>
+<head>
+<script type="text/javascript">
+$(function(){
+	var f = $('#ff');
+	var gender = f.find('input[name=gender]');
+	var ptree = gender.combotree({
+		lines : true,
+		url : '<%=basePath%>/auth/doNotNeedSession_tree'
+	});
+});
+function enter_ceping() {
+		var p = dj.dialog({
+			title : '测评',
+			href : 'ceping_1.jsp',
+			width : 540,
+			height : 410
+		});
+	}
+</script>
+</head>
+
+<body class="easyui-layout" data-options="fit:true">
+	<div data-options="region:'center',border:false"
+		style="overflow: hidden;">
+		<form id="ff" method="post" style="width:500px;">
+			<table>
+				<tr>
+					<td>学员编号：</td>
+					<td colspan="3"><input class="easyui-textbox" type="text"
+						name="userid" data-options="" style="width:100%;"></input></td>
+				</tr>
+				<tr>
+					<td>姓名：</td>
+					<td><input class="easyui-textbox" type="text" name="name"></input></td>
+					<td>出生日期：</td>
+					<td><input class="easyui-datetimebox" type="text" name="birthday"
+						data-options=""></input></td>
+				</tr>
+				<tr>
+					<td>拼音：</td>
+					<td><input class="easyui-textbox" type="text" name="py"
+						data-options=""></input></td>
+					<td>性别:</td>
+					<td><input class="easyui-textbox" type="text" name="gender"
+						data-options=""></input></td>
+				</tr>
+				<tr>
+					<td>曾用名：</td>
+					<td colspan="3"><input class="easyui-textbox" type="text"
+						name="used_name" data-options="" style="width:100%;"></input></td>
+				</tr>
+				<tr>
+					<td>父亲：</td>
+					<td><input class="easyui-textbox" type="text" name="father_name"
+						data-options=""></input></td>
+					<td>联系方式:</td>
+					<td><input class="easyui-textbox" type="text" name="father_mobile"
+						data-options=""></input></td>
+				</tr>
+				<tr>
+					<td>母亲：</td>
+					<td><input class="easyui-textbox" type="text" name="mother_name"
+						data-options=""></input></td>
+					<td>联系方式:</td>
+					<td><input class="easyui-textbox" type="text" name="mother_mobile"
+						data-options=""></input></td>
+				</tr>
+				<tr>
+					<td>其余联系人：</td>
+					<td><input class="easyui-textbox" type="text" name="other_connect"
+						data-options=""></input></td>
+					<td>联系方式:</td>
+					<td><input class="easyui-textbox" type="text" name="other_connect_mobile"
+						data-options=""></input></td>
+				</tr>
+				<tr>
+					<td>家庭住址：</td>
+					<td><input class="easyui-textbox" type="text" name="address"
+						data-options=""></input></td>
+					<td>幼儿园:</td>
+					<td><input class="easyui-textbox" type="text" name="school"
+						data-options=""></input></td>
+				</tr>
+				<tr>
+					<td colspan="4" align="middle">
+						<a href="#" class="easyui-linkbutton" data-options="plain:false">保存</a>
+						<a href="javascript:enter_ceping()" class="easyui-linkbutton" data-options="plain:false">进入测评</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<table id="treegrid-2"></table>
+	</div>
+</body>
+</html>

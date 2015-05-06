@@ -1,0 +1,85 @@
+package com.qcqz.service.impl;
+
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcqz.dao.TclassDAO;
+import com.qcqz.dao.TstudentDAO;
+import com.qcqz.domain.Tclass;
+import com.qcqz.domain.Tstudent;
+import com.qcqz.domain.Tuser;
+import com.qcqz.pageModel.DataGrid;
+import com.qcqz.pageModel.Student;
+import com.qcqz.service.StudentService;
+@Service
+public class StudentServiceImpl implements StudentService {
+
+	@Autowired
+	private TstudentDAO studentDao;
+	@Autowired
+	private TclassDAO classDao;
+	
+	@Override
+	public void save(Student student) {
+		Tstudent u = new Tstudent();
+		if (isUniqueUser(student.getCode(), null)) {
+			String exception = "用户名已存在,请重新输入. ";
+		}
+		u.setAddress(student.getAddress());
+		u.setBirthday(student.getBirthday());
+		u.setCode(student.getCode());
+		u.setFatherMobile(student.getFatherMobile());
+		u.setFatherName(student.getFatherName());
+		
+		u.setCid(UUID.randomUUID().toString());
+		
+		u.setTclass(classDao.get(Tclass.class, student.getClassIds()));
+		studentDao.save(u);
+
+	}
+	
+	public boolean isUniqueUser(String userName, String id) {
+		Tstudent tu = null;
+		if (id == null) {
+			tu = this.studentDao.get("from Tstudent t where t.code = ?", new String[] { userName });
+			if (tu == null){
+				return false;
+			}
+		}else{
+			tu = this.studentDao.get("from Tstudent t where t.code = ?", new String[] { userName });
+			if (tu == null){
+				return false;
+			}
+			if(tu!=null&&tu.getCode().equals(id)){
+				return false;
+			}
+		}
+		return true;
+	}
+	@Override
+	public DataGrid datagrid(String classId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete(String ids) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void update(Student student) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void classEdit(Student student) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

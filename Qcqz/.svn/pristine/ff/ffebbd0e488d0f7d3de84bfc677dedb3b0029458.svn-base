@@ -1,0 +1,50 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<div style="padding: 5px;overflow: hidden;">
+	<form id="userForm" method="post">
+	<input name="cid" type="hidden" />
+		<table class="tableForm">
+			<tr>
+				<td>学生编号</td>
+				<td><input name="code" type="text" class="easyui-textbox" data-options="required:'true',missingMessage:'请填写学生编号'"/>
+				</td>
+			</tr>
+			<tr>
+				<td>姓名</td>
+				<td><input name="name" type="text" class="easyui-textbox "  data-options="required:'true',missingMessage:'请填写学生姓名'"/>
+				</td>
+				<td>拼音</td>
+				<td><input name="py" type="text" class="easyui-textbox" />
+				</td>
+			</tr>
+			<tr>
+				<td>生日</td>
+				<td><input name="birthday" type="text" class="easyui-textbox" />
+				</td>
+				<td>年龄</td>
+				<td><input name="gender" type="text" class="easyui-textbox" />
+				</td>
+			</tr>
+			<tr>
+				<td>曾用名</td>
+				<td><input name="usedName" type="text" class="easyui-textbox" />
+				</td>
+				<td>父亲姓名</td>
+				<td><input name="fatherName" type="text" class="easyui-textbox" />
+				</td>
+			</tr>
+			<tr>
+				<td>父亲联系方式</td>
+				<td><input name="fatherMobile" style="width: 145px;"  data-options="required:'true',missingMessage:'请选择所属类别'"/>
+				</td>
+				<td>母亲姓名</td>
+				<td><input name="motherName" type="text" class="easyui-textbox" /></td>
+			</tr>
+			<tr>
+				<td>母亲联系方式</td>
+				<td><input name="motherMobile" type="text" class="easyui-textbox" /></td>
+				<td>班级</td>
+				<td><input name="classIds" type="text" style="width: 145px;" /></td>
+			</tr>
+		</table>
+	</form>
+</div>

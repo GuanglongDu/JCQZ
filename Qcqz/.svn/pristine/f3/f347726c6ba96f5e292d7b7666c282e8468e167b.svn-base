@@ -1,0 +1,80 @@
+package com.qcqz.domain;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+public class Tgroup implements Serializable {
+
+	private String cid;
+	private String cdesc;
+	private String ciconcls;
+	private String cname;
+	private Tcategories tcategories;
+	private Tproperty tproperty;
+	private Set twords = new HashSet(0);
+	
+	public Tgroup(String cid,  String cdesc, String ciconcls,
+			String cname, Set twords) {
+		this.cid = cid;
+		this.cdesc = cdesc;
+		this.ciconcls = ciconcls;
+		this.cname = cname;
+		this.twords = twords;
+	}
+	
+	public Tgroup(){}
+	public String getCid() {
+		return cid;
+	}
+
+	public void setCid(String cid) {
+		this.cid = cid;
+	}
+
+	public String getCdesc() {
+		return cdesc;
+	}
+
+	public void setCdesc(String cdesc) {
+		this.cdesc = cdesc;
+	}
+
+	public String getCiconcls() {
+		return ciconcls;
+	}
+
+	public void setCiconcls(String ciconcls) {
+		this.ciconcls = ciconcls;
+	}
+
+	public String getCname() {
+		return cname;
+	}
+
+	public void setCname(String cname) {
+		this.cname = cname;
+	}
+
+	public Set getTwords() {
+		return twords;
+	}
+
+	public void setTwords(Set twords) {
+		this.twords = twords;
+	}
+	public Tcategories getTcategories() {
+		return tcategories;
+	}
+	public void setTcategories(Tcategories tcategories) {
+		this.tcategories = tcategories;
+	}
+	public Tproperty getTproperty() {
+		return tproperty;
+	}
+	public void setTproperty(Tproperty tproperty) {
+		this.tproperty = tproperty;
+	}
+	
+	
+}

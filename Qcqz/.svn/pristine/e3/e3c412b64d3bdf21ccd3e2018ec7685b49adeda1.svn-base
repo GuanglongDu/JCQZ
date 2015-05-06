@@ -1,0 +1,151 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+<div style="padding: 5px;overflow: hidden;">
+	<form id="userForm" method="post"  enctype="multipart/form-data">
+		<table style="width:100%;">
+			<tr>
+				<td>词卡编号</td>
+				<td><input name="wcnumber" type="text" class="easyui-textbox" />
+				</td>
+				<td>词</td>
+				<td><input name="cname" type="text" class="easyui-textbox"
+					data-options="onChange:function(){
+					return changeCi(this)
+				}" /></td>
+			</tr>
+			<tr>
+				<td>课</td>
+				<td><input name="cterm" type="text" class="easyui-textbox" />
+				</td>
+				<td>组</td>
+				<td><input name="groupId" type="text" class="easyui-textbox" />
+				</td>
+			</tr>
+			<tr>
+
+				<td>级</td>
+				<td><input name="level" type="text" class="easyui-combotree"
+					data-options="url:'<%=basePath%>property/doNotNeedSession_treeRecursive',method:'post',onClick: function(node){
+                   loadTable(node);
+                } " />
+				</td>
+				<td>类别</td>
+				<td><input name="category" style="width: 145px;"
+					data-options="required:'true',missingMessage:'请选择所属类别'" /></td>
+			</tr>
+			<tr>
+				<td>图</td>
+				<td colspan='3'><input class="easyui-filebox" name="picfiles"
+					data-options="prompt:'Choose a file...'" style="width:100%"></td>
+			</tr>
+		</table>
+		<div id="tb" style="height:auto">
+			<a href="javascript:void(0)" class="easyui-linkbutton"
+				data-options="iconCls:'icon-add',plain:true" onclick="append()">添加</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton"
+				data-options="iconCls:'icon-remove',plain:true" onclick="removeit()">删除</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton"
+				data-options="iconCls:'icon-save',plain:true" onclick="accept()">Accept</a>
+
+		</div>
+		<table class="easyui-datagrid" id="tableEnterData"
+			data-options="singleSelect: true,onClickRow: onClickRow"></table>
+	</form>
+</div>
+<script type="text/javascript">
+	$(function() {
+		$('#tableEnterData').datagrid({
+			columns : [ [ {
+				field : 'ID',
+				title : 'ID',
+				width : 100 ,
+				formatter:function(value,row){
+					return row.id;
+				}
+			}, {
+				field : 'letter',
+				title : '字',
+				width : 150,
+				editor: 'textbox',
+				formatter:function(value,row){
+					return row.letter;
+				}
+			}, {
+				field : 'pinyi',
+				title : '拼音',
+				width : 150,
+				editor: 'textbox'
+			} ] ],
+		});
+	})
+	
+	var editIndex = undefined;
+	function endEditing() {
+		if (editIndex == undefined) {
+			return true
+		}
+		if ($('#tableEnterData').datagrid('validateRow', editIndex)){
+				var ed = $('#tableEnterData').datagrid('getEditor', {index:editIndex,field:'letter'});
+				$('#tableEnterData').datagrid('endEdit', editIndex);
+				editIndex = undefined;
+				return true;
+			} else {
+				return false;
+			}
+	}
+	
+	function append() {
+		$('#tableEnterData').datagrid('appendRow',{pinyi:''});
+		editIndex = $('#tableEnterData').datagrid('getRows').length - 1;
+		$('#tableEnterData').datagrid('selectRow', editIndex).datagrid('beginEdit',
+				editIndex);
+	}
+	
+	function removeit() {
+		if (editIndex == undefined) {
+			return
+		}
+		$('#tableEnterData').datagrid('cancelEdit', editIndex).datagrid('deleteRow',
+				editIndex);
+		editIndex = undefined;
+	}
+	
+	function accept(){
+			$('#tableEnterData').datagrid('acceptChanges');
+		
+	}
+
+	function changeCi(){
+		var v = $('input[name=cname]').val();
+		if(v){
+			var vArray = v.split("");
+			var str = [];
+			$.each(vArray,function(key,value){
+				var obj = {};
+				obj.id = (key+1);
+				obj.letter = value;
+				obj.pinyi = "";
+				str.push(obj);
+			})
+			$('#tableEnterData').datagrid({
+				data: str
+			});
+		}
+	}
+	function onClickRow(index){
+		if (editIndex != index){
+			if (endEditing()){
+				$('#tableEnterData').datagrid('selectRow', index)
+						.datagrid('beginEdit', index);
+				editIndex = index;
+			} else {
+				$('#tableEnterData').datagrid('selectRow', editIndex);
+			}
+		}
+	}
+</script>

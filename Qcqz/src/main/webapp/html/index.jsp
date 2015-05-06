@@ -1,0 +1,54 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+<!DOCTYPE html>
+<html>
+<head lang="zh">
+<meta charset="UTF-8">
+<title>识字软件管理系统</title>
+<link rel="stylesheet" type="text/css" href="../css/default.css">
+<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css">
+<script type="text/javascript" src="../easyui/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../easyui/outlook.js"></script>
+<script type="text/javascript" charset="utf-8">
+function logout(b) {
+		$('#sessionInfoDiv').html('');
+		$.post('<%=basePath%>login/logout', function() {
+			window.location.href="<%=basePath%>login.jsp";
+		});
+	}
+</script>
+</head>
+<body class="easyui-layout">
+	<div id="sessionInfoDiv" style="overflow: hidden; height: 30px;
+        background: #7f99be repeat-x center 50%;
+        line-height: 20px;color: #fff; font-family: Verdana, 微软雅黑,黑体" data-options="region:'north'">
+        <span style="padding-left:10px; font-size: 20px; text-align: inherit;" ><strong style="color: white;">晶橙启智—识字系统</strong></span>
+        <span style="position: absolute; right: 0px; bottom: 0px; "><c:if test="${sessionInfo.userId != null}"><strong style="color: white;">[${sessionInfo.loginName}]，欢迎您</strong></c:if>
+		<a href="javascript:void(0);" class="easyui-menubutton" data-options="iconCls:'icon-quit'" onclick="$.messager.confirm('注销','您确定要退出么?',function(r){if(r){logout(true);}else{return;}});"><strong style="color: white;">注销</strong></a></span>
+	</div>
+	<div data-options="region:'west',title:'导航菜单',split:true"
+		style="width:220px;background:#eee;">
+		 <div id="wnav" class="easyui-accordion accordion accordion-noborder" data-options="fit:true,border:false">
+		 
+		 </div>
+	</div>
+	<div id="mainPanle" data-options="region:'center'"
+		style="padding:5px;background:#fff;">
+		<div id="tabs" class="easyui-tabs"  fit="true" border="false" >
+			<div title="欢迎使用" style="padding:20px;overflow:hidden;" id="home">
+				
+			<h1>欢迎使用</h1>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>

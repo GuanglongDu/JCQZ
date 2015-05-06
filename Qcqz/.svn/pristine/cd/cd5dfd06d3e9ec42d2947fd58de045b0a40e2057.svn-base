@@ -1,0 +1,64 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<div style="padding: 5px;overflow: hidden;">
+	<form id="userForm" method="post">
+		<table class="tableForm">
+			<tr>
+				<td>字卡编号</td>
+				<td><input name="wcnumber" type="text" class="easyui-textbox" />
+				</td>
+			</tr>
+			<tr>
+				<td>字</td>
+				<td><input name="word" type="text" class="easyui-textbox" />
+				</td>
+				<td>拼音</td>
+				<td><input name="pinyi" type="text" class="easyui-textbox" />
+				</td>
+			</tr>
+			<tr>
+				<td>期</td>
+				<td><input name="period" type="text" class="easyui-textbox" />
+				</td>
+				<td>课</td>
+				<td><input name="tclass" type="text" class="easyui-textbox" />
+				</td>
+			</tr>
+			<tr>
+				<td>组</td>
+				<td><input name="group" type="text" class="easyui-textbox" />
+				</td>
+				<td>级</td>
+				<td><input name="level" type="text" class="easyui-textbox" />
+				</td>
+			</tr>
+			<tr>
+				<td>类别</td>
+				<td><input name="category" style="width: 145px;"  data-options="required:'true',missingMessage:'请选择所属类别'"/>
+				</td>
+				<td>词</td>
+				<td><input name="ci" type="text" class="easyui-textbox" /></td>
+			</tr>
+			<tr>
+				<td>图</td>
+				<td colspan="3"><input name="image" type="hidden" />
+
+					<div class="easyui-panel"
+						style="width:322px;padding:30px 70px 50px 70px">
+						<div style="margin-bottom:20px">
+							<div>Name:</div>
+							<input class="easyui-textbox" style="width:100%">
+						</div>
+						<div style="margin-bottom:20px">
+							<div>File1:</div>
+							<input class="easyui-filebox" name="file1"
+								data-options="prompt:'Choose a file...'" style="width:100%">
+						</div>
+						<div>
+							<a href="#" class="easyui-linkbutton" style="width:100%">Upload</a>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>

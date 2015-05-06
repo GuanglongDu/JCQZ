@@ -1,0 +1,244 @@
+package com.qcqz.domain;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Student entity. @author MyEclipse Persistence Tools
+ */
+
+public class Tstudent implements java.io.Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// Fields
+
+	private String cid;
+	private String name;
+	private String code;
+	private String birthday;
+	private String py;
+	private Integer gender;
+	private String usedName;
+	private String fatherName;
+	private String fatherMobile;
+	private String motherName;
+	private String motherMobile;
+	private String otherConnect;
+	private String otherConnectMobile;
+	private String address;
+	private String school;
+	private String teacherId;
+	private String userId;
+	private String picture;
+	private Integer pictureId;
+	private Tclass tclass;
+	private Set tstudentclass = new HashSet(0);
+	private Set tTest = new HashSet(0);
+	// Constructors
+
+	/** default constructor */
+	public Tstudent() {
+	}
+
+	/** full constructor */
+	public Tstudent(String name, String code, String birthday, String py,
+			Integer gender, String usedName, String fatherName,
+			String fatherMobile, String motherName, String motherMobile,
+			String otherConnect, String otherConnectMobile, String address,
+			String school, String teacherId, String userId, String picture,
+			Integer pictureId) {
+		this.name = name;
+		this.code = code;
+		this.birthday = birthday;
+		this.py = py;
+		this.gender = gender;
+		this.usedName = usedName;
+		this.fatherName = fatherName;
+		this.fatherMobile = fatherMobile;
+		this.motherName = motherName;
+		this.motherMobile = motherMobile;
+		this.otherConnect = otherConnect;
+		this.otherConnectMobile = otherConnectMobile;
+		this.address = address;
+		this.school = school;
+		this.teacherId = teacherId;
+		this.userId = userId;
+		this.picture = picture;
+		this.pictureId = pictureId;
+	}
+
+	// Property accessors
+
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getCid() {
+		return cid;
+	}
+
+	public void setCid(String cid) {
+		this.cid = cid;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCode() {
+		return this.code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getBirthday() {
+		return this.birthday;
+	}
+
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+
+	public String getPy() {
+		return this.py;
+	}
+
+	public void setPy(String py) {
+		this.py = py;
+	}
+
+	public Integer getGender() {
+		return this.gender;
+	}
+
+	public void setGender(Integer gender) {
+		this.gender = gender;
+	}
+
+	public String getUsedName() {
+		return this.usedName;
+	}
+
+	public void setUsedName(String usedName) {
+		this.usedName = usedName;
+	}
+
+	public String getFatherName() {
+		return this.fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getFatherMobile() {
+		return this.fatherMobile;
+	}
+
+	public void setFatherMobile(String fatherMobile) {
+		this.fatherMobile = fatherMobile;
+	}
+
+	public String getMotherName() {
+		return this.motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
+
+	public String getMotherMobile() {
+		return this.motherMobile;
+	}
+
+	public void setMotherMobile(String motherMobile) {
+		this.motherMobile = motherMobile;
+	}
+
+	public String getOtherConnect() {
+		return this.otherConnect;
+	}
+
+	public void setOtherConnect(String otherConnect) {
+		this.otherConnect = otherConnect;
+	}
+
+	public String getOtherConnectMobile() {
+		return this.otherConnectMobile;
+	}
+
+	public void setOtherConnectMobile(String otherConnectMobile) {
+		this.otherConnectMobile = otherConnectMobile;
+	}
+
+	public String getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getSchool() {
+		return this.school;
+	}
+
+	public void setSchool(String school) {
+		this.school = school;
+	}
+
+	public String getTeacherId() {
+		return this.teacherId;
+	}
+
+	public void setTeacherId(String teacherId) {
+		this.teacherId = teacherId;
+	}
+
+	public String getUserId() {
+		return this.userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getPicture() {
+		return this.picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
+	}
+
+	public Integer getPictureId() {
+		return this.pictureId;
+	}
+
+	public void setPictureId(Integer pictureId) {
+		this.pictureId = pictureId;
+	}
+
+	public Tclass getTclass() {
+		return tclass;
+	}
+
+	public void setTclass(Tclass tclass) {
+		this.tclass = tclass;
+	}
+
+	public Set getTstudentclass() {
+		return tstudentclass;
+	}
+
+	public void setTstudentclass(Set tstudentclass) {
+		this.tstudentclass = tstudentclass;
+	}
+
+}

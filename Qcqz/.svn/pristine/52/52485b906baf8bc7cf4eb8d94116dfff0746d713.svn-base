@@ -1,0 +1,136 @@
+package com.qcqz.domain;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+
+public class Twords implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private String cid;
+	private String cdesc;
+	private String cname;
+	private String cpath;
+	private String picNo;
+	private Tpic tpic;
+	private String wcnumber;
+	private String pinyi;
+	private String cterm;
+	private BigDecimal cseq;
+	private Set twordletters = new HashSet(0);
+	private Tgroup tgroup;
+	
+	public Twords(String cid,  String cdesc, String cpath,
+			String cname, String twords, String picNo,Tpic tpic) {
+		this.cid = cid;
+		this.cdesc = cdesc;
+		this.cpath = cpath;
+		this.cname = cname;
+		this.picNo = picNo;
+		this.tpic = tpic;
+	}
+	
+	public Twords(){}
+
+	public String getCid() {
+		return cid;
+	}
+
+	public void setCid(String cid) {
+		this.cid = cid;
+	}
+
+	public String getCdesc() {
+		return cdesc;
+	}
+
+	public void setCdesc(String cdesc) {
+		this.cdesc = cdesc;
+	}
+
+	public String getCname() {
+		return cname;
+	}
+
+	public void setCname(String cname) {
+		this.cname = cname;
+	}
+
+	public String getCpath() {
+		return cpath;
+	}
+
+	public void setCpath(String cpath) {
+		this.cpath = cpath;
+	}
+
+	public String getPicNo() {
+		return picNo;
+	}
+
+	public void setPicNo(String picNo) {
+		this.picNo = picNo;
+	}
+
+	public Tpic getTpic() {
+		return tpic;
+	}
+
+	public void setTpic(Tpic tpic) {
+		this.tpic = tpic;
+	}
+
+	public String getWcnumber() {
+		return wcnumber;
+	}
+
+	public void setWcnumber(String wcnumber) {
+		this.wcnumber = wcnumber;
+	}
+
+	public String getPinyi() {
+		return pinyi;
+	}
+
+	public void setPinyi(String pinyi) {
+		this.pinyi = pinyi;
+	}
+
+	public String getCterm() {
+		return cterm;
+	}
+
+	public void setCterm(String cterm) {
+		this.cterm = cterm;
+	}
+
+	public BigDecimal getCseq() {
+		return cseq;
+	}
+
+	public void setCseq(BigDecimal cseq) {
+		this.cseq = cseq;
+	}
+
+	public Set getTwordletters() {
+		return twordletters;
+	}
+
+	public void setTwordletters(Set twordletters) {
+		this.twordletters = twordletters;
+	}
+
+	public Tgroup getTgroup() {
+		return tgroup;
+	}
+
+	public void setTgroup(Tgroup tgroup) {
+		this.tgroup = tgroup;
+	}
+	
+}

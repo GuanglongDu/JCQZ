@@ -1,0 +1,92 @@
+package com.qcqz.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcqz.dao.TgroupDAO;
+import com.qcqz.dao.TpropertyDAO;
+import com.qcqz.domain.Tdept;
+import com.qcqz.domain.Tgroup;
+import com.qcqz.domain.Tproperty;
+import com.qcqz.pageModel.DataGrid;
+import com.qcqz.pageModel.Dept;
+import com.qcqz.pageModel.Group;
+import com.qcqz.service.GroupService;
+@Service
+public class GroupServiceImpl implements GroupService {
+	@Autowired
+	private TgroupDAO groupDao;
+	
+	@Autowired
+	private TpropertyDAO propertyDao;
+	
+	@Override
+	public void add(Group group) {
+		Tgroup tgroup = new Tgroup();
+		tgroup.setCid(UUID.randomUUID().toString());
+		tgroup.setCname(group.getCname());
+		Tproperty property = propertyDao.get(Tproperty.class, group.getTpropertyId());
+		tgroup.setTproperty(property);
+		tgroup.setCseq(group.getCseq());
+		groupDao.save(tgroup);
+	}
+
+	@Override
+	public void edit(Group group) {
+		Tgroup tgroup = groupDao.get(Tgroup.class, group.getCid());
+		if(group.getCname() != null && "".equals(group.getCname())){
+			tgroup.setCname(group.getCname());
+		}
+		if(group.getTpropertyId() != null){
+			Tproperty property = propertyDao.get(Tproperty.class, group.getTpropertyId());
+			if(tgroup.getTproperty() != property){
+				tgroup.setTproperty(property);
+			}
+		}
+		groupDao.update(tgroup);
+	}
+
+	@Override
+	public void delete(Group group) {
+		Tgroup tgroup = groupDao.get(Tgroup.class, group.getCid());
+		//need TODO
+		groupDao.delete(tgroup);
+	}
+
+	@Override
+	public List<Group> combobox(Group group) {
+		List<Tgroup> list = null;
+		if(group != null && group.getTpropertyId() != null){
+			list = groupDao.find("from Tgroup t where t.tproperty.cid = ? order by t.cseq", new Object[] { group.getTpropertyId() });
+		}
+		return changeModel(list);
+	}
+
+	private List<Group> changeModel(List<Tgroup> Tdepts) {
+		List<Group> l = new ArrayList<Group>();
+		if (Tdepts != null && Tdepts.size() > 0) {
+			for (Tgroup t : Tdepts) {
+				Group m = new Group();
+				BeanUtils.copyProperties(t, m);
+				if (t.getTproperty() != null) {
+					m.setTpropertyId(t.getTproperty().getCid());
+					
+				}
+				m.setCname(t.getCname());
+				m.setCid(t.getCid());
+				
+				l.add(m);
+			}
+		}
+		return l;
+	}
+	
+	private Long countChildren(String pid) {
+		return groupDao.count("select count(*) from Tgroup t where t.tproperty.cid = ?", new Object[] { pid });
+	}
+}

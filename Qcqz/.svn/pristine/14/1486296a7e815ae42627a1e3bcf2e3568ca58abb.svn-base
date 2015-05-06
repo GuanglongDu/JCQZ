@@ -1,0 +1,318 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<jsp:include page="../inc.jsp"></jsp:include>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+<html>
+<head lang="en">
+<script type="text/javascript" charset="utf-8">
+	var datagrid;
+	$(function() {
+
+		datagrid = $('#datagrid').datagrid({
+			method:'get',
+			url : '<%=basePath%>student/getAll',
+			pagination : true,
+			pagePosition : 'bottom',
+			pageSize : 10,
+			pageList : [ 10, 20, 30, 40 ],
+			fit : true,
+			fitColumns : true,
+			nowrap : true,
+			border : false,
+			idField : 'cid',
+			sortName : 'cstatus',
+			sortOrder : 'asc',
+			checkOnSelect : true,
+			selectOnCheck : true,
+			frozenColumns : [ [ {
+				title : '编号',
+				field : 'cid',
+				width : 10,
+				sortable : true,
+				checkbox : true
+			}, {
+				title : '学生编号',
+				field : 'code',
+				width : 100,
+				sortable : true
+			}, {
+				title : '姓名',
+				field : 'name',
+				width : 100,
+				sortable : true
+			}, {
+				title : '拼音',
+				field : 'py',
+				width : 100
+			} ] ],
+			columns : [ [ {
+				title : '生日',
+				field : 'birthday',
+				width : 10,
+				hidden : true
+			}, {
+				title : '年龄',
+				field : 'gender',
+				width : 100
+			}, {
+				title : '曾用名',
+				field : 'usedName',
+				width : 120
+			}, {
+				title : '父亲姓名',
+				field : 'fatherName',
+				width : 80
+			}, {
+				title : '父亲联系方式',
+				field : 'fatherMobile',
+				sortable : true,
+				width : 120
+			}, {
+				title : '母亲姓名',
+				field : 'motherName',
+				sortable : true,
+				width : 120
+			} , {
+				title : '母亲联系方式',
+				field : 'motherMobile',
+				sortable : true,
+				width : 120
+			},{
+				field:'opt',
+				title:'操作',
+				width:50,
+				align:'center',  
+            	formatter:function(value,rec){  
+                	var btn = '<a class="editcls" onclick="editRow(rec.cid)" href="javascript:void(0)">查看</a>';  
+                	return btn;  
+            	}  
+        }] ],
+			toolbar : [ {
+				text : '增加',
+				iconCls : 'icon-add',
+				handler : function() {
+					append();
+				}
+			}, '-', {
+				text : '删除',
+				iconCls : 'icon-remove',
+				handler : function() {
+					remove();
+				}
+			}, '-', {
+				text : '修改',
+				iconCls : 'icon-edit',
+				handler : function() {
+					edit();
+				}
+			}, '-', {
+				text : '取消选中',
+				iconCls : 'icon-undo',
+				handler : function() {
+					datagrid.datagrid('clearSelections');
+					datagrid.datagrid('unselectAll');
+				}
+			}, '-' ],
+			onRowContextMenu : function(e, rowIndex, rowData) {
+				e.preventDefault();
+				$(this).datagrid('unselectAll');
+				$(this).datagrid('selectRow', rowIndex);
+				$('#menu').menu('show', {
+					left : e.pageX,
+					top : e.pageY
+				});
+			}
+		});
+
+	});
+	
+	function editRow(studentId){
+	//evalutative/query?studentId=studentId;
+	}
+	
+	function edit() {
+		var rows = datagrid.datagrid('getSelections');
+		if (rows.length == 1) {
+			var p = dj.dialog({
+				title : '编辑用户',
+				href : '<%=basePath%>student/studentEdit',
+				width : 450,
+				height : 480,
+				buttons : [ {
+					text : '编辑',
+					handler : function() {
+						var f = p.find('form');
+						f.form('submit', {
+							url : '<%=basePath%>student/edit',
+							success : function(d) {
+								var json = $.parseJSON(d);
+								if (json.success) {
+									datagrid.datagrid('reload');
+									p.dialog('close');
+								}
+								dj.messagerShow({
+									msg : json.msg,
+									title : '提示'
+								});
+							}
+						});
+					}
+				} ],
+				onLoad : function() {
+					var f = p.find('form');
+					var deptId = f.find('input[name=classIds]');
+					var deptIdComboboxTree = deptId.combotree({
+						url : '<%=basePath%>nclass/doNotNeedSession_treeRecursive',
+						multiple : false,
+						editable : false,
+						panelHeight : 'auto',
+						onLoadSuccess: function (node, data) {
+							deptId.combotree("setValue",rows[0].classIds);
+		                }
+					});
+					f.form('load', {
+						cid : rows[0].cid,
+						code : rows[0].code,
+						name : rows[0].name,
+						py : rows[0].py,
+						birthday : rows[0].birthday,
+						gender : rows[0].gender,
+						usedName : rows[0].usedName,
+						fatherName : rows[0].fatherName,
+						fatherMobile : rows[0].fatherMobile,
+						motherName : rows[0].motherName,
+						motherMobile : rows[0].motherMobile,
+						otherConnect : rows[0].otherConnect,
+						otherConnectMobile : rows[0].otherConnectMobile,
+						address : rows[0].address,
+						school : rows[0].school,
+						classIds : rows[0].classIds,
+					});
+				}
+			});
+		} else if (rows.length > 1) {
+			dj.messagerAlert('提示', '同一时间只能编辑一条记录！', 'error');
+		} else {
+			dj.messagerAlert('提示', '请选择要编辑的记录！', 'error');
+		}
+	}
+	
+	function append() {
+		var p = dj.dialog({
+			title : '添加数据',
+			href : '<%=basePath%>student/studentAdd',
+			width : 500,
+			height : 480,
+			buttons : [ {
+				text : '添加',
+				handler : function() {
+					var f = p.find('form');
+					f.form('submit', {
+						url : '<%=basePath%>student/add',
+						success : function(d) {
+							var json = $.parseJSON(d);
+							if (json.success) {
+								datagrid.datagrid('reload');
+								p.dialog('close');
+							}
+							dj.messagerShow({
+								msg : json.msg,
+								title : '提示'
+							});
+						}
+					});
+				}
+			} ],
+			onLoad : function() {
+				var f = p.find('form');
+					var deptId = f.find('input[name=classIds]');
+					var deptIdComboboxTree = deptId.combotree({
+						url : '<%=basePath%>nclass/doNotNeedSession_treeRecursive',
+						multiple : false,
+						editable : false,
+						panelHeight : 'auto'
+					});
+					
+			}
+		});
+	}
+	function remove() {
+		var rows = datagrid.datagrid('getChecked');
+		var ids = [];
+		if (rows.length > 0) {
+			dj.messagerConfirm('请确认', '您要删除当前所选项目？', function(r) {
+				if (r) {
+					for ( var i = 0; i < rows.length; i++) {
+						ids.push(rows[i].cid);
+					}
+					$.ajax({
+						url : '<%=basePath%>student/deleteStudent',
+						data : {
+							ids : ids.join(',')
+						},
+						dataType : 'json',
+						success : function(d) {
+							datagrid.datagrid('load');
+							datagrid.datagrid('unselectAll');
+							dj.messagerShow({
+								title : '提示',
+								msg : d.msg
+							});
+						}
+					});
+				}
+			});
+		} else {
+			dj.messagerAlert('提示', '请勾选要删除的记录！', 'error');
+		}
+	}
+	function _search() {
+		datagrid.datagrid('load', dj.serializeObject($('#searchForm')));
+	}
+	function cleanSearch() {
+		datagrid.datagrid('load', {});
+		$('#searchForm input').val('');
+	}
+	
+	function loadTable(node){
+	 	$('#datagrid').datagrid('load',{classIds:node.id});   
+	}
+</script>
+</head>
+<body class="easyui-layout" data-options="fit:true">
+	<!-- <div data-options="region:'north',border:false,title:'过滤条件'" style="height: 55px;overflow: hidden;" align="left">
+		<form id="searchForm">
+			<table class="tableForm datagrid-toolbar" style="width: 100%;height: 100%;">
+				<tr>
+					<th>用户名</th>
+					<td><input name="cname" style="width:317px;" />
+					<a href="javascript:void(0);" class="easyui-linkbutton" onclick="_search();">过滤</a><a href="javascript:void(0);" class="easyui-linkbutton" onclick="cleanSearch();">取消</a></td>
+				</tr>
+			</table>
+		</form>
+	</div> -->
+	<div data-options="region:'west',title:'班级列表结构树',split:true"
+		style="width:220px;background:#eee;">
+		<div class="easyui-panel" fit="true" style="padding:5px">
+			<ul id="tt" class="easyui-tree" data-options="url:'<%=basePath%>nclass/doNotNeedSession_treeRecursive',method:'post',onClick: function(node){
+                   loadTable(node);
+                } ">
+			</ul>
+		</div>
+
+	</div>
+	<div data-options="region:'center',border:false" style="overflow: hidden;">
+		<table id="datagrid"></table>
+	</div>
+
+	<div id="menu" class="easyui-menu" style="width:120px;display: none;">
+		<div onclick="append();" data-options="iconCls:'icon-add'">增加</div>
+		<div onclick="remove();" data-options="iconCls:'icon-remove'">删除</div>
+		<div onclick="edit();" data-options="iconCls:'icon-edit'">编辑</div>
+	</div>
+</body>
+</html>

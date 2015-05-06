@@ -1,0 +1,11 @@
+package com.qcqz.service.impl;
+
+import com.qcqz.pageModel.DataGrid;
+import com.qcqz.pageModel.Group;
+
+public interface GroupService {
+	public void add(Group group);
+	public void edit(Group group);
+	public void delete(Group group);
+	public DataGrid datagrid(Group group);
+}

@@ -1,0 +1,280 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<jsp:include page="../inc.jsp"></jsp:include>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="../../css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="div_container">
+        <div class="" style="margin-left: 20px; margin-top: 20px;">
+            <div style="float: left; font-size: 132px;">生字</div>
+            <div id="wordContainer">
+                <div id="row_1" class="row">
+                </div>
+                <div id="row_2" class="row">
+                </div>
+            </div>
+            <div id="exit">退出系统</div>
+        </div>
+        <div class="" style="clear: both; margin-top: 50px;">
+            <div id="word_group" style="float: left; width: 30px; margin-left: 306px;">
+            </div>
+            <div style="float: left; margin-left: 200px; border: 1px solid black;width: 200px; margin-top: 103px;">
+                <div tag="bigWord" id="bigWordContainer" style="width: 200px; height: 200px; font-size: 183px;"></div>
+            </div>
+            <div style="float: left; margin-left: 145px;width: 300px; margin-top: 63px;border:1px solid black;">
+                <img tag="img" id="wordImage" style="width: 300px; height: 300px" />
+            </div>
+            <div tag="showImage" style="float:left;border:1px solid black;top:273px;left:1245px;position:absolute;">显示图片</div>
+        </div>
+        <div id="groupBar" style="clear: both;">
+            <div class="wordItem" tag="g" index="0">1 组</div>
+            <div class="wordItem" tag="g" index="1">2 组</div>
+            <div class="wordItem" tag="g" index="2">3 组</div>
+            <div class="wordItem" tag="g" index="3">4 组</div>
+            <div class="wordItem" tag="g" index="4">5 组</div>
+            <div class="wordItem">练习</div>
+            <div class="wordItem">拆字练习</div>
+            <div class="wordItem" style="margin-left: 175px">返回</div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    var data = "看,我,们,这,里,还,有,很,多,人,的,名,字,都,不,是,一,样,的,小,学,生,都,来,学,习,看,肉,味,儿".split(',');
+    var src = "timer.png";
+    var result = [];
+    for (var i = 0; i < data.length; i++) {
+        result.push({ key: data[i], src: src, index: i, isread: false });
+    }
+
+    var Word = function (data, size) {
+        this._data = data;
+        this._result = [];
+        this._pageSize = size;
+
+        this.word = { key: "", src: "" };
+
+        this.init = function () {
+            this.getResult();
+        }
+
+        this.getResult = function () {
+            var _index = 0;
+
+            for (var i = 0, ci; ci = this._data[i]; i++) {
+                if (!this._result[_index]) {
+                    this._result[_index] = [ci];
+                }
+                else {
+                    var _len = this._result[_index].length;
+                    if (_len == this._pageSize) {
+                        _index++;
+                        this._result[_index] = [ci]
+                    }
+                    else {
+                        this._result[_index].push(ci);
+                    }
+                }
+            }
+        }
+
+        this.getGroupByIndex = function (index) {
+            return this._result[index];
+        }
+
+        this.getWordByKey = function (key) {
+            var workObj = null;
+            for (var i = 0; i < this._result.length; i++) {
+                if (this._result[i].key == key) {
+                    workObj = this._result[i];
+                }
+            }
+        }
+
+        this.getWordByIndex = function (index) {
+            var word = "";
+            for (var i = 0; i < this._data.length; i++) {
+                if (this._data[i].index == parseInt(index)) {
+                    word = this._data[i];
+                    break;
+                }
+            }
+            return word;
+        }
+
+        this.setRead = function (index) {
+            var word = this.getWordByIndex(index);
+            word.isread = true;
+        }
+    }
+
+    var View = function (word) {
+        var that = this;
+        this.renderGroupByIndex = function (container, index) {
+            $(container).html("");
+            if (!index) {
+                index = 0;
+            }
+            var data = word.getGroupByIndex(index);
+            var html = "";
+            for (var i = 0; i < data.length; i++) {
+                var color = "white";
+                if (data[i].isread) {
+                    color = "gray";
+                }
+                html += "<div style='background-color:" + color + "' class='wordItem' tag='groupItem' index='" + data[i].index + "' isread='" + data[i].isread + "'>" + data[i].key + "</div>";
+            }
+            $(container).append($(html));
+
+        }
+
+        this.renderAllWord = function (row1, row2) {
+            var data = word._data;
+            var htmlRow1 = "";
+            var htmlRow2 = "";
+            for (var i = 0; i < data.length; i++) {
+                var color = "white";
+                if (data[i].isread) {
+                    color = "gray";
+                }
+                if (i < 15) {
+                    htmlRow1 += "<div style='background-color:" + color + "' index='" + data[i].index + "' isread='" + data[i].isread + "'>" + data[i].key + "</div>";
+                }
+                else {
+                    htmlRow2 += "<div style='background-color:" + color + "' index='" + data[i].index + "' isread='" + data[i].isread + "'>" + data[i].key + "</div>";
+                }
+            }
+            $(row1).append(htmlRow1);
+            $(row2).append(htmlRow2);
+        }
+
+        this.evt = function (e) {
+            var el = e.target;
+            var flag = false;
+            if (el.getAttribute("tag") == "g") {
+                var index = el.getAttribute("index");
+                if (index != null) {
+                    that.renderGroupByIndex($("#word_group"), index);
+                    that.clearBigWordContainer();
+                    that.clearImageSrc();
+                }
+                
+            }
+            if (el.getAttribute("tag") == "groupItem") {
+                var index = el.getAttribute("index");
+                if (index != null) {
+                    that.clearGroupColor(el);
+                    el.style.backgroundColor = "gray";
+                    var tempWord = word.getWordByIndex(index);
+                    that.renderBigWord(tempWord);
+                    that.renderImage(tempWord);
+                }
+            }
+            if (el.getAttribute("tag") == "bigWord") {
+                var index = el.getAttribute("index");
+                if (index != null) {
+                    var tempWord = word.getWordByIndex(index);
+                    that.setStatusAllData(tempWord);
+                    word.setRead(index);
+                    that.updateElement(tempWord);
+                    that.renderImage(tempWord);
+                }
+            }
+            if (el.getAttribute("tag") == "img") {
+                if ($(el).attr("src") != null) {
+                    $(el).parent().css("display", "none");
+                }
+            }
+            if (el.getAttribute("tag") == "showImage") {
+                $("#wordImage").parent().css("display", "block");
+            }
+        }
+
+        this.clearGroupColor = function (el) {
+            $(el).parent().find("div[tag=groupItem]").each(function () {
+                if ($(this).attr("isread") == "false") {
+                    $(this).css("background-Color", "white");
+                }
+            })
+        }
+
+        this.updateElement = function (tempWord) {
+            $("#div_container").find("div").each(function () {
+                if ($(this).attr("index") == tempWord.index) {
+                    $(this).attr("isread", tempWord.isread);
+                }
+            })
+        }
+
+        this.setStatusAllData = function (tempWord) {
+            if (tempWord.isread) {
+                return;
+            }
+            var div = null;
+            var divs = $("#wordContainer").find("div");
+            divs.each(function () {
+                if ($(this).attr("index") == tempWord.index.toString()) {
+                    div = this;
+                }
+            })
+            this.changeColor(div);
+        }
+
+        this.count = 0;
+        this.changeColor = function (div) {
+            if (this.count > 5) {
+                $(div).css("background-Color", "gray");
+                this.count = 0;
+                return;
+            }
+            if (this.count % 2 == 0) {
+                $(div).css("background-Color", "red");
+            } else {
+                $(div).css("background-Color", "yellow");
+            }
+            this.count++;
+            var _arg = arguments;
+            setTimeout(function () { _arg.callee.apply(that, _arg) }, 100);
+        }
+
+        this.renderBigWord = function (tempData) {
+            $("#bigWordContainer").html(tempData.key).attr("isread", tempData.isread).attr("index", tempData.index);
+        }
+
+        this.renderImage = function (tempData) {
+            $("#wordImage").attr("src", tempData.src).attr("index", tempData.index).attr("isread", tempData.isread).css("display", "block");
+        }
+
+        this.clearBigWordContainer = function () {
+            $("#bigWordContainer").html("").removeAttr("index").removeAttr("isread");
+        }
+
+        this.clearImageSrc = function () {
+            $("#wordImage").removeAttr("src");
+        }
+
+        this.initEvent = function () {
+            document.getElementById("div_container").addEventListener("click", function (e) { that.evt(e); }, true);
+        }
+
+        this.init = function () {
+            this.renderAllWord($("#row_1"), $("#row_2"));
+            this.renderGroupByIndex($("#word_group"), 0);
+            this.initEvent();
+        }
+    }
+    var d = new Word(result, 6);
+    var v = new View(d);
+    d.init();
+    v.init();
+</script>
+

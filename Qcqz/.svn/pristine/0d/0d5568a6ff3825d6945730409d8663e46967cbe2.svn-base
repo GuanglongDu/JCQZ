@@ -1,0 +1,89 @@
+﻿.tab {
+    width: 100%;
+    height: 100%;
+    border-left: 1px solid #ababab;
+    border-top: 1px solid #ababab;
+}
+
+    .tab th {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #dedede;
+    }
+
+    .tab td {
+        border-right: 1px solid #ababab;
+        border-bottom: 1px solid #ababab;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .tab a {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+#div_container {
+    border: 1px solid black;
+    width: 100%;
+    height: 700px;
+}
+
+.wordItem {
+    margin-top: 24px;
+    text-align: center;
+    width: 100px;
+    border: 1px solid black;
+    height:40px;
+}
+
+#wordContainer {
+    float: left;
+    margin-left: -90px;
+    margin-top: 10px;
+}
+
+#exit {
+    float: right;
+}
+
+#row_1 div {
+    border: 1px solid black;
+    padding-left: 5px;
+    padding-top: 5px;
+    float: left;
+    margin-left: 10px;
+    width: 50px;
+    height: 50px;
+}
+
+#row_2 div {
+    border: 1px solid black;
+    padding-left: 5px;
+    padding-top: 5px;
+    float: left;
+    margin-left: 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.row {
+    height: 85px;
+    margin-left: 100px;
+}
+#exit {
+    margin-right: 124px;
+    margin-top: 70px;
+    border: 1px solid green;
+}
+#groupBar {
+    margin-left:274px;
+}
+#groupBar div {
+    float:left;
+    margin-left:30px;
+    width:100px;
+    height:20px;
+}

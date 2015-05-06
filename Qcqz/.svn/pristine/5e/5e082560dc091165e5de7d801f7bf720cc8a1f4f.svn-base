@@ -1,0 +1,692 @@
+package com.qcqz.service.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcqz.dao.TauthDAO;
+import com.qcqz.dao.TdeptDAO;
+import com.qcqz.dao.TmenuDAO;
+import com.qcqz.dao.TroleDAO;
+import com.qcqz.dao.TroletauthDAO;
+import com.qcqz.dao.TuserDAO;
+import com.qcqz.dao.TusertroleDAO;
+import com.qcqz.domain.Tauth;
+import com.qcqz.domain.Tdept;
+import com.qcqz.domain.Tmenu;
+import com.qcqz.domain.Trole;
+import com.qcqz.domain.Troletauth;
+import com.qcqz.domain.Tuser;
+import com.qcqz.domain.Tusertrole;
+import com.qcqz.service.RepairService;
+import com.qcqz.util.Encrypt;
+
+@Service
+public class RepairServiceImpl implements RepairService {
+
+	@Autowired
+	private TuserDAO userDao;
+	@Autowired
+	private TdeptDAO deptDao;
+	@Autowired
+	private TmenuDAO menuDao;
+	@Autowired
+	private TauthDAO authDao;
+	@Autowired
+	private TroleDAO roleDao;
+	@Autowired
+	private TusertroleDAO userroleDao;
+	@Autowired
+	private TroletauthDAO roleauthDao;
+	
+	
+	synchronized public void deleteAndInit() {
+		menuDao.executeHql("update Tmenu t set t.tmenu = null");
+		menuDao.executeHql("delete Tmenu");
+		roleauthDao.executeHql("delete Troletauth");
+		userroleDao.executeHql("delete Tusertrole");
+		authDao.executeHql("update Tauth t set t.tauth = null");
+		authDao.executeHql("delete Tauth");
+		roleDao.executeHql("delete Trole");
+		userDao.executeHql("delete Tuser");
+		
+	}
+	@Override
+	public void initDataBase() {
+		deleteAndInit();
+		initMenu();
+		initAuth();
+		initRole();
+		initDept();
+		initUser();
+		initRoleAuth();
+		initUserRole();
+
+	}
+
+	private void initUserRole() {
+		userroleDao.executeHql("delete Tusertrole t where t.tuser.cid in ( '0' )");
+
+		Tusertrole userrole = new Tusertrole();
+		userrole.setCid(UUID.randomUUID().toString());
+		userrole.setTrole(roleDao.get(Trole.class, "0"));
+		userrole.setTuser(userDao.get(Tuser.class, "0"));
+		userroleDao.save(userrole);
+	}
+
+	private void initRoleAuth() {
+		roleauthDao.executeHql("delete Troletauth t where t.trole.cid = '0'");
+
+		Trole role = roleDao.get(Trole.class, "0");
+
+		List<Tauth> auths = authDao.find("from Tauth");
+		if (auths != null && auths.size() > 0) {
+			for (Tauth auth : auths) {
+				Troletauth roleauth = new Troletauth();
+				roleauth.setCid(UUID.randomUUID().toString());
+				roleauth.setTrole(role);
+				roleauth.setTauth(auth);
+				roleauthDao.save(roleauth);
+			}
+		}
+	}
+
+	private void initRole() {
+		Trole admin = new Trole();
+		admin.setCid("0");
+		admin.setCname("超级管理员");
+		admin.setCdesc("系统所有权限");
+		roleDao.saveOrUpdate(admin);
+
+		Trole guest = new Trole();
+		guest.setCid("1");
+		guest.setCname("Teacher");
+		guest.setCdesc("");
+		roleDao.saveOrUpdate(guest);
+	}
+
+	private void initAuth() {
+		authDao.executeHql("update Tauth a set a.tauth = null");
+
+		Tauth sshe = new Tauth();
+		sshe.setCid("0");
+		sshe.setTauth(null);
+		sshe.setCname("首页");
+		sshe.setCurl("");
+		sshe.setCseq(BigDecimal.valueOf(1));
+		sshe.setCdesc("");
+		authDao.saveOrUpdate(sshe);
+
+	
+
+		Tauth xtgl = new Tauth();
+		xtgl.setCid("xtgl");
+		xtgl.setTauth(sshe);
+		xtgl.setCname("系统管理");
+		xtgl.setCurl("");
+		xtgl.setCseq(BigDecimal.valueOf(2));
+		xtgl.setCdesc("");
+		authDao.saveOrUpdate(xtgl);
+
+		Tauth yhgl = new Tauth();
+		yhgl.setCid("yhgl");
+		yhgl.setTauth(xtgl);
+		yhgl.setCname("用户管理");
+		yhgl.setCurl("");
+		yhgl.setCseq(BigDecimal.valueOf(1));
+		yhgl.setCdesc("");
+		authDao.saveOrUpdate(yhgl);
+
+		Tauth yhglym = new Tauth();
+		yhglym.setCid("yhglym");
+		yhglym.setTauth(yhgl);
+		yhglym.setCname("用户管理页面");
+		yhglym.setCurl("user/");
+		yhglym.setCseq(BigDecimal.valueOf(1));
+		yhglym.setCdesc("");
+		authDao.saveOrUpdate(yhglym);
+
+		Tauth yhcx = new Tauth();
+		yhcx.setCid("yhcx");
+		yhcx.setTauth(yhgl);
+		yhcx.setCname("用户查询");
+		yhcx.setCurl("user/query");
+		yhcx.setCseq(BigDecimal.valueOf(2));
+		yhcx.setCdesc("");
+		authDao.saveOrUpdate(yhcx);
+
+		Tauth yhaddym = new Tauth();
+		yhaddym.setCid("yhaddym");
+		yhaddym.setTauth(yhgl);
+		yhaddym.setCname("添加用户页面");
+		yhaddym.setCurl("user/addUser");
+		yhaddym.setCseq(BigDecimal.valueOf(3));
+		yhaddym.setCdesc("");
+		authDao.saveOrUpdate(yhaddym);
+
+		Tauth yhadd = new Tauth();
+		yhadd.setCid("yhadd");
+		yhadd.setTauth(yhgl);
+		yhadd.setCname("用户添加");
+		yhadd.setCurl("user/add");
+		yhadd.setCseq(BigDecimal.valueOf(4));
+		yhadd.setCdesc("");
+		authDao.saveOrUpdate(yhadd);
+
+		Tauth yheditym = new Tauth();
+		yheditym.setCid("yheditym");
+		yheditym.setTauth(yhgl);
+		yheditym.setCname("修改用户页面");
+		yheditym.setCurl("user/editUser");
+		yheditym.setCseq(BigDecimal.valueOf(5));
+		yheditym.setCdesc("");
+		authDao.saveOrUpdate(yheditym);
+
+		Tauth yhedit = new Tauth();
+		yhedit.setCid("yhedit");
+		yhedit.setTauth(yhgl);
+		yhedit.setCname("用户修改");
+		yhedit.setCurl("user/editUser");
+		yhedit.setCseq(BigDecimal.valueOf(6));
+		yhedit.setCdesc("");
+		authDao.saveOrUpdate(yhedit);
+
+		Tauth yhsc = new Tauth();
+		yhsc.setCid("yhsc");
+		yhsc.setTauth(yhgl);
+		yhsc.setCname("用户删除");
+		yhsc.setCurl("user/deleteUser");
+		yhsc.setCseq(BigDecimal.valueOf(7));
+		yhsc.setCdesc("");
+		authDao.saveOrUpdate(yhsc);
+
+		Tauth yhxgjsym = new Tauth();
+		yhxgjsym.setCid("yhxgjsym");
+		yhxgjsym.setTauth(yhgl);
+		yhxgjsym.setCname("修改角色页面");
+		yhxgjsym.setCurl("user/userRoleEdit");
+		yhxgjsym.setCseq(BigDecimal.valueOf(8));
+		yhxgjsym.setCdesc("批量修改用户角色");
+		authDao.saveOrUpdate(yhxgjsym);
+
+		Tauth yhxgjs = new Tauth();
+		yhxgjs.setCid("yhxgjs");
+		yhxgjs.setTauth(yhgl);
+		yhxgjs.setCname("修改角色");
+		yhxgjs.setCurl("user/roleEdit");
+		yhxgjs.setCseq(BigDecimal.valueOf(9));
+		yhxgjs.setCdesc("批量修改用户角色");
+		authDao.saveOrUpdate(yhxgjs);
+
+		Tauth jsgl = new Tauth();
+		jsgl.setCid("jsgl");
+		jsgl.setTauth(xtgl);
+		jsgl.setCname("角色管理");
+		jsgl.setCurl("");
+		jsgl.setCseq(BigDecimal.valueOf(2));
+		jsgl.setCdesc("");
+		authDao.saveOrUpdate(jsgl);
+
+		Tauth jsglym = new Tauth();
+		jsglym.setCid("jsglym");
+		jsglym.setTauth(jsgl);
+		jsglym.setCname("角色管理页面");
+		jsglym.setCurl("role/roleManager");
+		jsglym.setCseq(BigDecimal.valueOf(1));
+		jsglym.setCdesc("");
+		authDao.saveOrUpdate(jsglym);
+
+		Tauth jscx = new Tauth();
+		jscx.setCid("jscx");
+		jscx.setTauth(jsgl);
+		jscx.setCname("角色查询");
+		jscx.setCurl("role/query");
+		jscx.setCseq(BigDecimal.valueOf(2));
+		jscx.setCdesc("");
+		authDao.saveOrUpdate(jscx);
+
+		Tauth jsaddym = new Tauth();
+		jsaddym.setCid("jsaddym");
+		jsaddym.setTauth(jsgl);
+		jsaddym.setCname("添加角色页面");
+		jsaddym.setCurl("role/roleAdd");
+		jsaddym.setCseq(BigDecimal.valueOf(3));
+		jsaddym.setCdesc("");
+		authDao.saveOrUpdate(jsaddym);
+
+		Tauth jsadd = new Tauth();
+		jsadd.setCid("jsadd");
+		jsadd.setTauth(jsgl);
+		jsadd.setCname("角色添加");
+		jsadd.setCurl("role/add");
+		jsadd.setCseq(BigDecimal.valueOf(4));
+		jsadd.setCdesc("");
+		authDao.saveOrUpdate(jsadd);
+
+		Tauth jseditym = new Tauth();
+		jseditym.setCid("jseditym");
+		jseditym.setTauth(jsgl);
+		jseditym.setCname("编辑角色页面");
+		jseditym.setCurl("role/roleEdit");
+		jseditym.setCseq(BigDecimal.valueOf(5));
+		jseditym.setCdesc("");
+		authDao.saveOrUpdate(jseditym);
+
+		Tauth jsedit = new Tauth();
+		jsedit.setCid("jsedit");
+		jsedit.setTauth(jsgl);
+		jsedit.setCname("角色编辑");
+		jsedit.setCurl("role/edit");
+		jsedit.setCseq(BigDecimal.valueOf(6));
+		jsedit.setCdesc("");
+		authDao.saveOrUpdate(jsedit);
+
+		Tauth jsdelete = new Tauth();
+		jsdelete.setCid("jsdelete");
+		jsdelete.setTauth(jsgl);
+		jsdelete.setCname("角色删除");
+		jsdelete.setCurl("role/delete");
+		jsdelete.setCseq(BigDecimal.valueOf(7));
+		jsdelete.setCdesc("");
+		authDao.saveOrUpdate(jsdelete);
+
+		Tauth qxgl = new Tauth();
+		qxgl.setCid("qxgl");
+		qxgl.setTauth(xtgl);
+		qxgl.setCname("权限管理");
+		qxgl.setCurl("");
+		qxgl.setCseq(BigDecimal.valueOf(3));
+		qxgl.setCdesc("");
+		authDao.saveOrUpdate(qxgl);
+
+		Tauth qxglym = new Tauth();
+		qxglym.setCid("qxglym");
+		qxglym.setTauth(qxgl);
+		qxglym.setCname("权限管理页面");
+		qxglym.setCurl("auth/authmanager");
+		qxglym.setCseq(BigDecimal.valueOf(1));
+		qxglym.setCdesc("");
+		authDao.saveOrUpdate(qxglym);
+
+		Tauth qxcx = new Tauth();
+		qxcx.setCid("qxcx");
+		qxcx.setTauth(qxgl);
+		qxcx.setCname("权限查询");
+		qxcx.setCurl("auth/query");
+		qxcx.setCseq(BigDecimal.valueOf(2));
+		qxcx.setCdesc("");
+		authDao.saveOrUpdate(qxcx);
+
+		Tauth qxaddym = new Tauth();
+		qxaddym.setCid("qxaddym");
+		qxaddym.setTauth(qxgl);
+		qxaddym.setCname("添加权限页面");
+		qxaddym.setCurl("auth/authAdd");
+		qxaddym.setCseq(BigDecimal.valueOf(3));
+		qxaddym.setCdesc("");
+		authDao.saveOrUpdate(qxaddym);
+
+		Tauth qxadd = new Tauth();
+		qxadd.setCid("qxadd");
+		qxadd.setTauth(qxgl);
+		qxadd.setCname("权限添加");
+		qxadd.setCurl("auth/add");
+		qxadd.setCseq(BigDecimal.valueOf(4));
+		qxadd.setCdesc("");
+		authDao.saveOrUpdate(qxadd);
+
+		Tauth qxeditym = new Tauth();
+		qxeditym.setCid("qxeditym");
+		qxeditym.setTauth(qxgl);
+		qxeditym.setCname("编辑权限页面");
+		qxeditym.setCurl("auth/authEdit");
+		qxeditym.setCseq(BigDecimal.valueOf(5));
+		qxeditym.setCdesc("");
+		authDao.saveOrUpdate(qxeditym);
+
+		Tauth qxedit = new Tauth();
+		qxedit.setCid("qxedit");
+		qxedit.setTauth(qxgl);
+		qxedit.setCname("权限编辑");
+		qxedit.setCurl("auth/edit");
+		qxedit.setCseq(BigDecimal.valueOf(6));
+		qxedit.setCdesc("");
+		authDao.saveOrUpdate(qxedit);
+
+		Tauth qxdelete = new Tauth();
+		qxdelete.setCid("qxdelete");
+		qxdelete.setTauth(qxgl);
+		qxdelete.setCname("权限删除");
+		qxdelete.setCurl("auth/delete");
+		qxdelete.setCseq(BigDecimal.valueOf(7));
+		qxdelete.setCdesc("");
+		authDao.saveOrUpdate(qxdelete);
+
+		Tauth cdgl = new Tauth();
+		cdgl.setCid("cdgl");
+		cdgl.setTauth(xtgl);
+		cdgl.setCname("菜单管理");
+		cdgl.setCurl("");
+		cdgl.setCseq(BigDecimal.valueOf(4));
+		cdgl.setCdesc("");
+		authDao.saveOrUpdate(cdgl);
+
+		Tauth cdglym = new Tauth();
+		cdglym.setCid("cdglym");
+		cdglym.setTauth(cdgl);
+		cdglym.setCname("菜单管理页面");
+		cdglym.setCurl("menu/menuManager");
+		cdglym.setCseq(BigDecimal.valueOf(1));
+		cdglym.setCdesc("");
+		authDao.saveOrUpdate(cdglym);
+
+		Tauth cdcx = new Tauth();
+		cdcx.setCid("cdcx");
+		cdcx.setTauth(cdgl);
+		cdcx.setCname("菜单查询");
+		cdcx.setCurl("menu/query");
+		cdcx.setCseq(BigDecimal.valueOf(2));
+		cdcx.setCdesc("");
+		authDao.saveOrUpdate(cdcx);
+
+		Tauth cdaddym = new Tauth();
+		cdaddym.setCid("cdaddym");
+		cdaddym.setTauth(cdgl);
+		cdaddym.setCname("添加菜单页面");
+		cdaddym.setCurl("menu/menuAdd");
+		cdaddym.setCseq(BigDecimal.valueOf(3));
+		cdaddym.setCdesc("");
+		authDao.saveOrUpdate(cdaddym);
+
+		Tauth cdadd = new Tauth();
+		cdadd.setCid("cdadd");
+		cdadd.setTauth(cdgl);
+		cdadd.setCname("菜单添加");
+		cdadd.setCurl("menu/add");
+		cdadd.setCseq(BigDecimal.valueOf(4));
+		cdadd.setCdesc("");
+		authDao.saveOrUpdate(cdadd);
+
+		Tauth cdeditym = new Tauth();
+		cdeditym.setCid("cdeditym");
+		cdeditym.setTauth(cdgl);
+		cdeditym.setCname("编辑菜单页面");
+		cdeditym.setCurl("menu/menuEdit");
+		cdeditym.setCseq(BigDecimal.valueOf(5));
+		cdeditym.setCdesc("");
+		authDao.saveOrUpdate(cdeditym);
+
+		Tauth cdedit = new Tauth();
+		cdedit.setCid("cdedit");
+		cdedit.setTauth(cdgl);
+		cdedit.setCname("菜单编辑");
+		cdedit.setCurl("menu/edit");
+		cdedit.setCseq(BigDecimal.valueOf(6));
+		cdedit.setCdesc("");
+		authDao.saveOrUpdate(cdedit);
+
+		Tauth cddelete = new Tauth();
+		cddelete.setCid("cddelete");
+		cddelete.setTauth(cdgl);
+		cddelete.setCname("菜单删除");
+		cddelete.setCurl("menu/delete");
+		cddelete.setCseq(BigDecimal.valueOf(7));
+		cddelete.setCdesc("");
+		authDao.saveOrUpdate(cddelete);
+		
+		Tauth bmgl = new Tauth();
+		bmgl.setCid("bmgl");
+		bmgl.setTauth(xtgl);
+		bmgl.setCname("部门管理");
+		bmgl.setCurl("");
+		bmgl.setCseq(BigDecimal.valueOf(5));
+		bmgl.setCdesc("");
+		authDao.saveOrUpdate(bmgl);
+
+		Tauth bmglym = new Tauth();
+		bmglym.setCid("bmglym");
+		bmglym.setTauth(bmgl);
+		bmglym.setCname("部门管理页面");
+		bmglym.setCurl("dept/deptManager");
+		bmglym.setCseq(BigDecimal.valueOf(1));
+		bmglym.setCdesc("");
+		authDao.saveOrUpdate(bmglym);
+
+		Tauth bmcx = new Tauth();
+		bmcx.setCid("bmcx");
+		bmcx.setTauth(bmgl);
+		bmcx.setCname("部门查询");
+		bmcx.setCurl("dept/query");
+		bmcx.setCseq(BigDecimal.valueOf(2));
+		bmcx.setCdesc("");
+		authDao.saveOrUpdate(bmcx);
+
+		Tauth bmaddym = new Tauth();
+		bmaddym.setCid("bmaddym");
+		bmaddym.setTauth(bmgl);
+		bmaddym.setCname("添加部门页面");
+		bmaddym.setCurl("dept/deptAdd");
+		bmaddym.setCseq(BigDecimal.valueOf(3));
+		bmaddym.setCdesc("");
+		authDao.saveOrUpdate(bmaddym);
+
+		Tauth bmadd = new Tauth();
+		bmadd.setCid("bmadd");
+		bmadd.setTauth(bmgl);
+		bmadd.setCname("部门菜单添加");
+		bmadd.setCurl("dept/add");
+		bmadd.setCseq(BigDecimal.valueOf(4));
+		bmadd.setCdesc("");
+		authDao.saveOrUpdate(bmadd);
+
+		Tauth bmeditym = new Tauth();
+		bmeditym.setCid("bmeditym");
+		bmeditym.setTauth(bmgl);
+		bmeditym.setCname("编辑部门页面");
+		bmeditym.setCurl("dept/deptEdit");
+		bmeditym.setCseq(BigDecimal.valueOf(5));
+		bmeditym.setCdesc("");
+		authDao.saveOrUpdate(bmeditym);
+
+		Tauth bmedit = new Tauth();
+		bmedit.setCid("bmedit");
+		bmedit.setTauth(bmgl);
+		bmedit.setCname("部门编辑");
+		bmedit.setCurl("dept/edit");
+		bmedit.setCseq(BigDecimal.valueOf(6));
+		bmedit.setCdesc("");
+		authDao.saveOrUpdate(bmedit);
+
+		Tauth bmdelete = new Tauth();
+		bmdelete.setCid("bmdelete");
+		bmdelete.setTauth(bmgl);
+		bmdelete.setCname("部门删除");
+		bmdelete.setCurl("dept/delete");
+		bmdelete.setCseq(BigDecimal.valueOf(7));
+		bmdelete.setCdesc("");
+		authDao.saveOrUpdate(bmdelete);
+
+	}
+
+	private void initMenu() {
+
+		Tmenu xtgl = new Tmenu();
+		xtgl.setCid("xtgl");
+		xtgl.setCname("系统管理");
+		xtgl.setCseq(BigDecimal.valueOf(1));
+		xtgl.setCurl("");
+		xtgl.setCiconcls("icon-orange");
+		xtgl.setTmenu(null);
+		menuDao.saveOrUpdate(xtgl);
+
+		Tmenu yhgl = new Tmenu();
+		yhgl.setCid("yhgl");
+		yhgl.setCname("用户管理");
+		yhgl.setCseq(BigDecimal.valueOf(1));
+		yhgl.setCurl("userControl.jsp");
+		yhgl.setTmenu(xtgl);
+		yhgl.setCiconcls("icon-user");
+		menuDao.saveOrUpdate(yhgl);
+		
+		Tmenu bmgl = new Tmenu();
+		bmgl.setCid("bmgl");
+		bmgl.setCname("部门管理");
+		bmgl.setCseq(BigDecimal.valueOf(2));
+		bmgl.setCurl("admin/dept.jsp");
+		bmgl.setCiconcls("icon-group");
+		bmgl.setTmenu(xtgl);
+		menuDao.saveOrUpdate(bmgl);
+
+		Tmenu jsgl = new Tmenu();
+		jsgl.setCid("jsgl");
+		jsgl.setCname("角色管理");
+		jsgl.setCseq(BigDecimal.valueOf(3));
+		jsgl.setCurl("admin/role.jsp");
+		jsgl.setCiconcls("icon-role");
+		jsgl.setTmenu(xtgl);
+		menuDao.saveOrUpdate(jsgl);
+
+		Tmenu qxgl = new Tmenu();
+		qxgl.setCid("qxgl");
+		qxgl.setCname("权限管理");
+		qxgl.setCseq(BigDecimal.valueOf(4));
+		qxgl.setCurl("admin/auth.jsp");
+		qxgl.setTmenu(xtgl);
+		qxgl.setCiconcls("icon-auth");
+		menuDao.saveOrUpdate(qxgl);
+
+		Tmenu cdgl = new Tmenu();
+		cdgl.setCid("cdgl");
+		cdgl.setCname("菜单管理");
+		cdgl.setCseq(BigDecimal.valueOf(5));
+		cdgl.setCurl("admin/menu.jsp");
+		cdgl.setCiconcls("icon-menu");
+		cdgl.setTmenu(xtgl);
+		menuDao.saveOrUpdate(cdgl);
+	
+
+		Tmenu wdgl = new Tmenu();
+		wdgl.setCid("wdgn");
+		wdgl.setCname("文档功能");
+		wdgl.setCseq(BigDecimal.valueOf(2));
+		wdgl.setCurl("");
+		wdgl.setCiconcls("icon-orange");
+		wdgl.setTmenu(null);
+		menuDao.saveOrUpdate(wdgl);
+
+		Tmenu sxdy = new Tmenu();
+		sxdy.setCid("sxdy");
+		sxdy.setCname("属性定义");
+		sxdy.setCseq(BigDecimal.valueOf(1));
+		sxdy.setCurl("dataEnter/propertyData.jsp");
+		sxdy.setTmenu(wdgl);
+		sxdy.setCiconcls("icon-user");
+		menuDao.saveOrUpdate(sxdy);
+
+		Tmenu lbdy = new Tmenu();
+		lbdy.setCid("lbdy");
+		lbdy.setCname("类别定义");
+		lbdy.setCseq(BigDecimal.valueOf(2));
+		lbdy.setCurl("dataEnter/categoriesData.jsp");
+		lbdy.setCiconcls("icon-group");
+		lbdy.setTmenu(wdgl);
+		menuDao.saveOrUpdate(lbdy);
+		
+		Tmenu sjlr = new Tmenu();
+		sjlr.setCid("sjlr");
+		sjlr.setCname("数据录入");
+		sjlr.setCseq(BigDecimal.valueOf(3));
+		sjlr.setCurl("dataEnter/enterData.jsp");
+		sjlr.setCiconcls("icon-group");
+		sjlr.setTmenu(wdgl);
+		menuDao.saveOrUpdate(sjlr);
+		
+		Tmenu bjgl = new Tmenu();
+		bjgl.setCid("bjgl");
+		bjgl.setCname("班级管理");
+		bjgl.setCseq(BigDecimal.valueOf(4));
+		bjgl.setCurl("dataEnter/classData.jsp");
+		bjgl.setCiconcls("icon-group");
+		bjgl.setTmenu(wdgl);
+		menuDao.saveOrUpdate(bjgl);
+		Tmenu xsgl = new Tmenu();
+		xsgl.setCid("xsgl");
+		xsgl.setCname("学生管理");
+		xsgl.setCseq(BigDecimal.valueOf(5));
+		xsgl.setCurl("dataEnter/studentData.jsp");
+		xsgl.setCiconcls("icon-group");
+		xsgl.setTmenu(wdgl);
+		menuDao.saveOrUpdate(xsgl);
+		
+		Tmenu kclb = new Tmenu();
+		kclb.setCid("wdgl");
+		kclb.setCname("课程列表");
+		kclb.setCseq(BigDecimal.valueOf(6));
+		kclb.setCurl("dataEnter/courselist.jsp");
+		kclb.setCiconcls("icon-role");
+		kclb.setTmenu(wdgl);
+		menuDao.saveOrUpdate(kclb);
+		
+		Tmenu jwgl = new Tmenu();
+		jwgl.setCid("jwgl");
+		jwgl.setCname("教务管理");
+		jwgl.setCseq(BigDecimal.valueOf(3));
+		jwgl.setCurl("");
+		jwgl.setCiconcls("icon-orange");
+		jwgl.setTmenu(null);
+		menuDao.saveOrUpdate(jwgl);
+		
+		Tmenu cp = new Tmenu();
+		cp.setCid("cp");
+		cp.setCname("测评");
+		cp.setCseq(BigDecimal.valueOf(1));
+		cp.setCurl("jwgl/ceping.jsp");
+		cp.setCiconcls("icon-role");
+		cp.setTmenu(jwgl);
+		menuDao.saveOrUpdate(cp);
+	}
+	
+	private void initDept() {
+		Tdept dept =  deptDao.get(Tdept.class, "0");
+		if(dept==null){
+			Tdept d = new Tdept();
+			d.setCid("0");
+			d.setCname("总部");
+			d.setCseq(BigDecimal.valueOf(0));
+			d.setCdesc("所有部门的父级部门");
+			deptDao.save(d);
+		}
+	}
+
+	private void initUser() {
+		List<Tuser> t = userDao.find("from Tuser t where t.cname = ? and t.cid != ?", new Object[] { "admin", "0" });// cid!='0'并且cname='admin'这是错误的数据，需要修复
+		if (t != null && t.size() > 0) {
+			for (Tuser u : t) {
+				u.setCname(u.getCname() + UUID.randomUUID().toString());
+			}
+		}
+		Tdept dept= null;
+		Tuser admin = new Tuser();
+		admin.setCid("0");
+		admin.setCname("admin");
+		admin.setCpwd(Encrypt.e("admin"));
+		admin.setCrealname("超级管理员");
+		admin.setCemail("admin@admin.com");
+		admin.setCmodifydatetime(new Date());
+		admin.setCcreatedatetime(new Date());
+		admin.setCstatus("0");
+		dept = deptDao.get(Tdept.class, "0");
+		if(dept==null){
+			dept.setCid("0");
+			dept.setCname("总部");
+			deptDao.save(dept);
+		}
+		admin.setTdept(dept);
+		userDao.saveOrUpdate(admin);
+	}
+	
+}

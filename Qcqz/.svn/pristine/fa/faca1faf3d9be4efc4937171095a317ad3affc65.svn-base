@@ -1,0 +1,42 @@
+package com.qcqz.domain;
+
+import java.io.Serializable;
+
+public class Twordletters implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String cid;
+	private Twords twords;
+	private Tletter tletter;
+	
+	public Twordletters(){}
+
+	public String getCid() {
+		return cid;
+	}
+
+	public void setCid(String cid) {
+		this.cid = cid;
+	}
+
+	public Twords getTwords() {
+		return twords;
+	}
+
+	public void setTwords(Twords twords) {
+		this.twords = twords;
+	}
+
+	public Tletter getTletter() {
+		return tletter;
+	}
+
+	public void setTletter(Tletter tletter) {
+		this.tletter = tletter;
+	}
+
+	
+	
+}

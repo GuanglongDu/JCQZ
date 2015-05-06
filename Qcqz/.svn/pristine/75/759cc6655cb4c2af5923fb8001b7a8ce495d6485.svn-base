@@ -1,0 +1,85 @@
+package com.qcqz.domain;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+
+public class Tcategories implements Serializable {
+
+	private String cid;
+	private String cdesc;
+	private String ciconcls;
+	private String cname;
+	private BigDecimal cseq;
+	private Set tproperty = new HashSet(0);
+	private Set twords = new HashSet(0);
+	public Tcategories(String cid,  String cdesc, String ciconcls,
+			String cname, BigDecimal cseq, Set tproperties) {
+		this.cid = cid;
+		this.cdesc = cdesc;
+		this.ciconcls = ciconcls;
+		this.cname = cname;
+		this.cseq = cseq;
+	}
+	
+	public Tcategories(){}
+
+	public String getCid() {
+		return cid;
+	}
+
+	public void setCid(String cid) {
+		this.cid = cid;
+	}
+
+	public String getCdesc() {
+		return cdesc;
+	}
+
+	public void setCdesc(String cdesc) {
+		this.cdesc = cdesc;
+	}
+
+	public String getCiconcls() {
+		return ciconcls;
+	}
+
+	public void setCiconcls(String ciconcls) {
+		this.ciconcls = ciconcls;
+	}
+
+	public String getCname() {
+		return cname;
+	}
+
+	public void setCname(String cname) {
+		this.cname = cname;
+	}
+
+	public BigDecimal getCseq() {
+		return cseq;
+	}
+
+	public void setCseq(BigDecimal cseq) {
+		this.cseq = cseq;
+	}
+
+	public Set getTproperty() {
+		return tproperty;
+	}
+
+	public void setTproperty(Set tproperty) {
+		this.tproperty = tproperty;
+	}
+
+	public Set getTwords() {
+		return twords;
+	}
+
+	public void setTwords(Set twords) {
+		this.twords = twords;
+	}
+
+	
+}

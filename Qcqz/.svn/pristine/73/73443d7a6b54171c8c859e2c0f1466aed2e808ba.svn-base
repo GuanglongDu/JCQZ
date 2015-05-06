@@ -1,0 +1,140 @@
+package com.qcqz.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcqz.dao.TWordslettersDAO;
+import com.qcqz.dao.TletterDAO;
+import com.qcqz.dao.TwordsDAO;
+import com.qcqz.domain.Tletter;
+import com.qcqz.domain.Trole;
+import com.qcqz.domain.Tstudent;
+import com.qcqz.domain.Tuser;
+import com.qcqz.domain.Tusertrole;
+import com.qcqz.domain.Twordletters;
+import com.qcqz.domain.Twords;
+import com.qcqz.pageModel.DataGrid;
+import com.qcqz.pageModel.Student;
+import com.qcqz.pageModel.Words;
+import com.qcqz.service.WordService;
+@Service
+public class WordsServiceImpl implements WordService {
+	@Autowired
+	private TwordsDAO wordsDao;
+	@Autowired
+	private TWordslettersDAO wordLettersDao;
+	@Autowired
+	private TletterDAO letterDao;
+	
+	@Override
+	public void add(Words words) {
+		Twords tword = new Twords();
+		tword.setCname(words.getCname());
+		tword.setCdesc(words.getCdesc());
+		tword.setCpath(words.getCpath());
+		tword.setWcnumber(words.getWcnumber());
+		tword.setCseq(words.getCseq());
+		tword.setCterm(words.getCterm());
+		tword.setCid(UUID.randomUUID().toString());
+		wordsDao.save(tword);
+	}
+
+	@Override
+	public void update(Words words) {
+		Twords u = wordsDao.get(Twords.class, words.getCid());
+		if(words.getCname()!=null&&!"".equals(words.getCname())){
+			u.setCname(words.getCname());
+		}
+		if(words.getCdesc()!=null&&!"".equals(words.getCdesc())){
+			u.setCdesc(words.getCdesc());
+		}
+		if(words.getCpath()!=null&&!"".equals(words.getCpath())){
+			u.setCpath(words.getCpath());
+		}
+		if(words.getWcnumber()!=null&&!"".equals(words.getWcnumber())){
+			u.setWcnumber(words.getWcnumber());
+		}
+		if(words.getCseq()!=null&&!"".equals(words.getCseq())){
+			u.setCseq(words.getCseq());
+		}
+		wordsDao.update(u);
+	}
+	
+	private void saveWordsLetter(Words user, Twords u) {
+		wordLettersDao.executeHql("delete Twordletters t where t.twords = ?", new Object[] { u });
+		if (user.getLetterIds() != null) {
+			for (String id : user.getLetterIds().split(",")) {
+				Twordletters tusertrole = new Twordletters();
+				tusertrole.setCid(UUID.randomUUID().toString());
+				tusertrole.setTletter(letterDao.get(Tletter.class, id.trim()));
+				tusertrole.setTwords(u);
+				wordLettersDao.save(tusertrole);
+			}
+		}
+	}
+	
+	@Override
+	public void delete(String ids) {
+		if (ids != null) {
+			for (String id : ids.split(",")) {
+				if (!id.trim().equals("0")) {
+					Twords u = wordsDao.get(Twords.class, id.trim());
+					if (u != null) {
+						wordLettersDao.executeHql("delete Twordletters t where t.twords = ?", new Object[] { u });
+						wordsDao.delete(u);
+					}
+				}
+			}
+		}
+
+	}
+
+	@Override
+	public DataGrid datagrid(Words words) {
+		DataGrid j = new DataGrid();
+		j.setRows(this.changeModel(find(words)));
+		j.setTotal(this.total(words));
+		return j;
+	}
+	
+	private List<Words> changeModel(List<Twords> tusers) {
+		List<Words> users = new ArrayList<Words>();
+		if (tusers != null && tusers.size() > 0) {
+			for (Twords student : tusers) {
+				Words u = new Words();
+				u.setCid(student.getCid());
+				u.setCname(student.getCname());
+				u.setCpath(student.getCpath());
+				u.setPinyi(student.getPinyi());
+				
+				users.add(u);
+				
+			}
+		}
+		return users;
+	}
+	private List<Twords> find(Words student) {
+		String hql = "from Twords t where 1=1 ";
+
+		List<Object> values = new ArrayList<Object>();
+		hql = addWhere(student, hql, values);
+		values.add(student.getGroupId());
+		return wordsDao.find(hql, values, student.getPage(), student.getRows());
+	}
+	private Long total(Words user) {
+		String hql = "select count(*) from Twords t where 1=1 ";
+		List<Object> values = new ArrayList<Object>();
+		values.add(user.getGroupId());
+		hql = addWhere(user, hql, values);
+		return wordsDao.count(hql, values);
+	}
+	
+	private String addWhere(Words user, String hql, List<Object> values) {
+		hql += " and t.tgroup.cid = ? ";
+		return hql;
+	}
+}

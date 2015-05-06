@@ -1,0 +1,55 @@
+package com.qcqz.domain;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+public class Tgroupletters implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String cid;
+	private Tgroup tgroup;
+	private Tletter tletter;
+	private String cdesc;
+	private BigDecimal cseq;
+	
+	public Tgroupletters(){}
+	
+	public String getCid() {
+		return cid;
+	}
+	public void setCid(String cid) {
+		this.cid = cid;
+	}
+
+	public Tletter getTletter() {
+		return tletter;
+	}
+	public void setTletter(Tletter tletter) {
+		this.tletter = tletter;
+	}
+	public String getCdesc() {
+		return cdesc;
+	}
+	public void setCdesc(String cdesc) {
+		this.cdesc = cdesc;
+	}
+	public BigDecimal getCseq() {
+		return cseq;
+	}
+	public void setCseq(BigDecimal cseq) {
+		this.cseq = cseq;
+	}
+
+	public Tgroup getTgroup() {
+		return tgroup;
+	}
+
+	public void setTgroup(Tgroup tgroup) {
+		this.tgroup = tgroup;
+	}
+	
+}

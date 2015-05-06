@@ -1,0 +1,45 @@
+package com.qcqz.interceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.qcqz.pageModel.SessionInfo;
+import com.qcqz.util.ResourceUtil;
+@Repository
+public class SessionInterceptor implements HandlerInterceptor  {
+
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public boolean preHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler) throws Exception {
+		SessionInfo sessionInfo = (SessionInfo) request.getSession().getAttribute(ResourceUtil.getSessionInfoName());
+		if(sessionInfo == null){
+			request.setAttribute("msg", "您还没有登录或登录已超时，请重新登录，2秒后将跳转到登录页面！<br><a href='javascript:void(0)' onclick='skip()'>如不能自动跳转请点击此处</a>");
+		
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void postHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request,
+			HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

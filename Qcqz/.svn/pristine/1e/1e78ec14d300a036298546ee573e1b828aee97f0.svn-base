@@ -1,0 +1,15 @@
+package com.qcqz.service;
+
+import com.qcqz.pageModel.DataGrid;
+import com.qcqz.pageModel.User;
+
+public interface WordService {
+
+	public void save(User user);
+
+	public DataGrid datagrid(User user);
+
+	public void delete(String ids);
+
+	public void update(User user) ;
+}

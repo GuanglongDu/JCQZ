@@ -1,0 +1,194 @@
+package com.qcqz.service.impl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcqz.dao.TpropertyDAO;
+import com.qcqz.domain.Tdept;
+import com.qcqz.domain.Tproperty;
+import com.qcqz.pageModel.Property;
+import com.qcqz.pageModel.TreeNode;
+import com.qcqz.service.PropertyService;
+import com.qcqz.util.MenuComparator;
+import com.qcqz.util.PropertiesComparator;
+@Service
+public class PropertyServiceImpl implements PropertyService {
+	@Autowired
+	private TpropertyDAO tpropertyDao;
+	
+	@Override
+	public List<Property> findAll() {
+		List<Property> ld = new ArrayList<Property>();
+		String hql = "from Tproperty t order by t.cseq";
+		List<Tproperty> ltd = tpropertyDao.find(hql);
+		for (Tproperty td : ltd) {
+			Property d = new Property();
+			d.setCid(td.getCid());
+			d.setCname(td.getCname());
+			d.setCiconcls(td.getCiconcls());
+			if(td.getTproperty()!=null){
+				d.setPid(td.getTproperty().getCid());
+			}
+			ld.add(d);
+		}
+		return ld;
+	}
+
+	@Override
+	public List<Property> treegrid(Property property) {
+		List<Tproperty> l;
+		if (property != null && property.getId() != null) {
+			l = tpropertyDao.find("from Tproperty t where t.tproperty.cid = ? order by t.cseq", new Object[] { property.getId() });
+		} else {
+			l = tpropertyDao.find("from Tproperty t where t.tproperty is null order by t.cseq");
+		}
+		return changeModel(l);
+	}
+
+	@Override
+	public void delete(Property property) {
+		del(property.getCid());
+
+	}
+
+	private void del(String cid) {
+		Tproperty t = tpropertyDao.get(Tproperty.class, cid);
+		if (t != null) {
+			Set<Tdept> depts = t.getTproperties();
+			if (depts != null && !depts.isEmpty()) {
+				for (Tdept tdept : depts) {
+					del(tdept.getCid());
+				}
+			}
+			tpropertyDao.delete(t);
+		}
+	}
+
+	@Override
+	public void add(Property property) {
+		Tproperty t = new Tproperty();
+		BeanUtils.copyProperties(property, t);
+		t.setCid(UUID.randomUUID().toString());
+		if (property.getPid() != null) {
+			t.setTproperty(tpropertyDao.get(Tproperty.class, property.getPid()));
+		}
+		if (property.getIconCls() != null) {
+			t.setCiconcls(property.getIconCls());
+		}
+		tpropertyDao.save(t);
+	}
+
+	@Override
+	public void edit(Property property) {
+		Tproperty t = tpropertyDao.get(Tproperty.class, property.getCid());
+		BeanUtils.copyProperties(property, t);
+		if (property.getIconCls() != null) {
+			t.setCiconcls(property.getIconCls());
+		}
+		if (property.getPid() != null && !property.getPid().equals(property.getCid())) {
+			Tproperty pt = tpropertyDao.get(Tproperty.class, property.getPid());
+			if (pt != null) {
+				if (isDown(t, pt)) {// 要将当前节点修改到当前节点的子节点中
+					Set<Tproperty> tdepts = t.getTproperties();// 当前要修改的节点的所有下级节点
+					if (tdepts != null && tdepts.size() > 0) {
+						for (Tproperty tdept : tdepts) {
+							if (tdept != null) {
+								tdept.setTproperty(null);
+							}
+						}
+					}
+				}
+				t.setTproperty(pt);
+			}
+		}
+	}
+	
+	private boolean isDown(Tproperty t, Tproperty pt) {
+		if (pt.getTproperty() != null) {
+			if (pt.getTproperty().getCid().equals(t.getCid())) {
+				return true;
+			} else {
+				return isDown(t, pt.getTproperty());
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public List<TreeNode> tree(Property property, Boolean b) {
+		List<Object> param = new ArrayList<Object>();
+		String hql = "from Tproperty t where t.tproperty is null order by t.cseq";
+		if (property != null && property.getId() != null && !property.getId().trim().equals("")) {
+			hql = "from Tproperty t where t.tproperty.cid = ? order by t.cseq";
+			param.add(property.getId());
+		}
+		List<Tproperty> l = tpropertyDao.find(hql, param);
+		List<TreeNode> tree = new ArrayList<TreeNode>();
+		for (Tproperty t : l) {
+			tree.add(this.tree(t, b));
+		}
+		return tree;
+	}
+	
+	private TreeNode tree(Tproperty t, boolean recursive) {
+		TreeNode node = new TreeNode();
+		node.setId(t.getCid());
+		node.setText(t.getCname());
+		if (t.getCiconcls() != null) {
+			node.setIconCls(t.getCiconcls());
+		} else {
+			node.setIconCls("");
+		}
+		if (t.getTproperties() != null && t.getTproperties().size() > 0) {
+			node.setState("closed");
+			if (recursive) {// 递归查询子节点
+				List<Tproperty> l = new ArrayList<Tproperty>(t.getTproperties());
+				Collections.sort(l, new PropertiesComparator());
+				List<TreeNode> children = new ArrayList<TreeNode>();
+				for (Tproperty r : l) {
+					TreeNode tn = tree(r, true);
+					children.add(tn);
+				}
+				node.setChildren(children);
+				node.setState("open");
+			}
+		}
+		return node;
+	}
+	
+	private List<Property> changeModel(List<Tproperty> property) {
+		List<Property> l = new ArrayList<Property>();
+		if (property != null && property.size() > 0) {
+			for (Tproperty t : property) {
+				Property m = new Property();
+				BeanUtils.copyProperties(t, m);
+				if (t.getTproperty() != null) {
+					m.setPid(t.getTproperty().getCid());
+					m.setPname(t.getTproperty().getCname());
+				}
+				if (countChildren(t.getCid()) > 0) {
+					m.setState("closed");
+				}
+				if (t.getCiconcls() == null) {
+					m.setIconCls("");
+				} else {
+					m.setIconCls(t.getCiconcls());
+				}
+				l.add(m);
+			}
+		}
+		return l;
+	}
+	
+	private Long countChildren(String pid) {
+		return tpropertyDao.count("select count(*) from Tproperty t where t.tproperty.cid = ?", new Object[] { pid });
+	}
+
+}
